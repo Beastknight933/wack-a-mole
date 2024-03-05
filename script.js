@@ -23,6 +23,7 @@ const holes = document.querySelectorAll('.hole');
     const time = randomTime(200, 1000);
     const hole = randomHole(holes);
     hole.classList.add('up');
+    document.getElementById('popSound').play();
     setTimeout(() => {
       hole.classList.remove('up');
       if (!timeUp) peep();
@@ -40,6 +41,7 @@ const holes = document.querySelectorAll('.hole');
   function whack(e) {
     if(!e.isTrusted) return; 
     score++;
+    document.getElementById('hitSound').play();
     this.parentNode.classList.remove('up');
     scoreBoard.textContent = score;
   }
