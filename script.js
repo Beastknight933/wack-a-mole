@@ -40,8 +40,8 @@ const holes = document.querySelectorAll('.hole');
 
   function whack(e) {
     if(!e.isTrusted) return; 
-    score++;
     document.getElementById('hitSound').play();
+    score++;
     this.parentNode.classList.remove('up');
     scoreBoard.textContent = score;
   }
