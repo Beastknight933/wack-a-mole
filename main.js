@@ -1,48 +1,41 @@
-const scoreSpan = document.getElementById('score');
-const gameContainer = document.getElementById('game-container');
-const startButton = document.getElementById('start-button');
-
+const holes = document.querySelectorAll('.hole');
+const scoreBoard = document.querySelector('.score');
+const moles = document.querySelectorAll('.mole');
+let lastHole;
+let timeUp = false;
 let score = 0;
-let isGameRunning = false;
-
-function createHole(holeNumber) {
-  const hole = document.createElement('div');
-  hole.classList.add('hole');
-  hole.dataset.holeNumber = holeNumber;
-  const moleImg = document.createElement('img');
-  moleImg.classList.add('mole');
-  moleImg.src = "mole.png"; // Replace with your mole image path
-  hole.appendChild(moleImg);
-  gameContainer.appendChild(hole);
-
-  hole.addEventListener('click', function() {
-    if (isGameRunning && this.querySelector('.mole').style.display === 'block') {
-      score++;
-      scoreSpan.textContent = score;
-      this.querySelector('.mole').style.display = 'none';
-    }
-  });
+function randomTime(min, max) {
+return Math.round(Math.random() * (max - min) + min);
 }
-
-function popUpMole() {
-  const randomHole = Math.floor(Math.random() * 16); // Assuming 16 holes (4x4 grid)
-  const hole = document.querySelector(`[data-hole-number="${randomHole}"]`);
-  const mole = hole.querySelector('.mole');
-  mole.style.display = 'block';
-  setTimeout(() => {
-    mole.style.display = 'none';
-    if (isGameRunning) popUpMole(); // Call again if game is running
-  }, 1000); // Mole pops up for 1 second
+function randomHole(holes) {
+const idx = Math.floor(Math.random() * holes.length);
+const hole = holes[idx];
+if (hole === lastHole) {
+return randomHole(holes);
 }
-
+lastHole = hole;
+return hole;
+}
+function peep() {
+const time = randomTime(200, 1000);
+const hole = randomHole(holes);
+hole.classList.add('up');
+setTimeout(() => {
+hole.classList.remove('up');
+if (!timeUp) peep();
+}, time);
+}
 function startGame() {
-  isGameRunning = true;
-  score = 0;
-  scoreSpan.textContent = score;
-  popUpMole();
-  startButton.disabled = true; // Disable start button during game
+scoreBoard.textContent = 0;
+timeUp = false;
+score = 0;
+peep();
+setTimeout(() => timeUp = true, 10000)
 }
-
-startButton.addEventListener('click', startGame);
-
-// Create the mole holes (adjust the number for a different grid size)
+function whack(e) {
+if(!e.isTrusted) return;
+score++;
+this.parentNode.classList.remove('up');
+scoreBoard.textContent = score;
+}
+moles.forEach(mole => mole.addEventListener('click', whack));
